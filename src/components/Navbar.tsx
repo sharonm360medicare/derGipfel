@@ -1,205 +1,135 @@
 import React, { useState } from 'react';
+import { Volume2, VolumeX, Shield, Lock, Unlock, Trophy } from 'lucide-react';
 import { useCompetition } from '../context/CompetitionContext';
-import { Shield, UserCheck, Menu, X, ArrowUpRight, LogOut } from 'lucide-react';
-import { playClickSound } from '../utils/sound';
+import { getSoundMuted, setSoundMuted, playClickSound } from '../utils/sound';
 
 interface NavbarProps {
-  onOpenAuth: () => void;
-  onOpenDashboard: () => void;
-  onScrollToRegister: () => void;
+  onOpenQuizMaster: () => void;
+  onOpenExam: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
-  onOpenAuth,
-  onOpenDashboard,
-  onScrollToRegister,
-}) => {
-  const { currentUser, logout } = useCompetition();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+export const Navbar: React.FC<NavbarProps> = ({ onOpenQuizMaster, onOpenExam }) => {
+  const { isQuizMasterLoggedIn, isExamUnlocked } = useCompetition();
+  const [muted, setMuted] = useState(getSoundMuted());
 
-  const navLinks = [
-    { label: 'Wettbewerb', href: '#wettbewerb' },
-    { label: 'Die Runden', href: '#runden' },
-    { label: 'Klassen & Gruppen', href: '#gruppen' },
-    { label: 'Rangliste', href: '#rangliste' },
-    { label: 'Zeitplan', href: '#zeitplan' },
-    { label: 'Regeln', href: '#regeln' },
-  ];
+  const handleToggleSound = () => {
+    const next = !muted;
+    setSoundMuted(next);
+    setMuted(next);
+  };
+
+  const handleNavClick = (id: string) => {
+    playClickSound();
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FBFBFA]/95 backdrop-blur-md border-b border-neutral-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-        {/* Zone 1: Single text element wordmark with iconic peak motif */}
+    <header className="sticky top-0 z-40 bg-[#FBFBFA]/90 backdrop-blur-md border-b border-neutral-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-8">
+        {/* Zone 1: Brand Wordmark (Single text element) */}
         <a
           href="#"
-          className="flex items-center gap-2 group text-neutral-900 focus:outline-none"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className="flex items-center gap-2.5 group shrink-0"
         >
-          {/* Geometric Mountain Peak SVG Icon */}
-          <svg
-            className="w-7 h-7 text-neutral-900 group-hover:text-red-600 transition-colors"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m2 20 7-13 4 7 3-5 6 11H2z" />
-          </svg>
-          <div className="flex flex-col">
-            <span className="font-display font-black text-xl tracking-tighter uppercase leading-none">
+          <div className="w-8 h-8 rounded-lg bg-neutral-900 text-white flex items-center justify-center font-display font-bold text-sm tracking-tighter group-hover:bg-red-600 transition-colors shadow-xs">
+            ▲
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-display font-black text-lg tracking-tight text-neutral-900 whitespace-nowrap">
               DER GIPFEL
             </span>
-            <span className="text-[9px] font-mono tracking-widest text-neutral-400 uppercase leading-none mt-0.5">
-              German Excellence
+            <span className="font-mono text-xs font-semibold text-red-600 whitespace-nowrap">
+              2026
             </span>
           </div>
         </a>
 
-        {/* Zone 2: 4-6 clean text navigation links */}
-        <nav className="hidden lg:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-neutral-600">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => playClickSound()}
-              className="hover:text-neutral-900 hover:underline underline-offset-8 transition-colors whitespace-nowrap"
-            >
-              {link.label}
-            </a>
-          ))}
+        {/* Zone 2: Navigation Links (4-5 single-line clean text links) */}
+        <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-neutral-600">
+          <button
+            onClick={() => handleNavClick('countdown')}
+            className="hover:text-neutral-900 transition-colors whitespace-nowrap shrink-0"
+          >
+            Zeitplan & Countdown
+          </button>
+          <button
+            onClick={() => handleNavClick('practice-arena')}
+            className="hover:text-neutral-900 transition-colors whitespace-nowrap shrink-0"
+          >
+            Übungsarena
+          </button>
+          <button
+            onClick={() => handleNavClick('rules')}
+            className="hover:text-neutral-900 transition-colors whitespace-nowrap shrink-0"
+          >
+            Wettbewerbsregeln
+          </button>
+          <button
+            onClick={() => handleNavClick('leaderboard')}
+            className="hover:text-neutral-900 transition-colors whitespace-nowrap shrink-0"
+          >
+            Bestenliste
+          </button>
         </nav>
 
-        {/* Zone 3: 1-2 primary actions */}
-        <div className="hidden sm:flex items-center gap-3">
-          {currentUser ? (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  playClickSound();
-                  onOpenDashboard();
-                }}
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg text-white transition-all flex items-center gap-1.5 shadow-xs ${
-                  currentUser.role === 'HEAD_MASTER'
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-amber-600 hover:bg-amber-700'
-                }`}
-              >
-                {currentUser.role === 'HEAD_MASTER' ? (
-                  <Shield className="w-3.5 h-3.5" />
-                ) : (
-                  <UserCheck className="w-3.5 h-3.5" />
-                )}
-                <span>
-                  {currentUser.role === 'HEAD_MASTER' ? 'Leitstelle' : 'Sub-Portal'}
-                </span>
-              </button>
+        {/* Zone 3: Primary Actions */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          {/* Sound Toggle */}
+          <button
+            onClick={handleToggleSound}
+            className="p-2 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100 rounded-lg transition-colors"
+            title={muted ? 'Ton aktivieren' : 'Ton stummschalten'}
+            aria-label="Sound Toggle"
+          >
+            {muted ? <VolumeX className="w-4 h-4 text-neutral-400" /> : <Volume2 className="w-4 h-4 text-neutral-700" />}
+          </button>
 
-              <button
-                onClick={() => {
-                  logout();
-                  playClickSound();
-                }}
-                className="p-2 text-neutral-500 hover:text-neutral-900 border border-neutral-200 hover:border-neutral-300 rounded-lg transition-colors"
-                title="Abmelden"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
+          {/* Exam Trigger CTA (if unlocked) */}
+          {isExamUnlocked ? (
             <button
               onClick={() => {
                 playClickSound();
-                onOpenAuth();
+                onOpenExam();
               }}
-              className="px-3.5 py-2 text-xs font-bold text-neutral-700 hover:text-neutral-900 border border-neutral-300 hover:border-neutral-400 rounded-lg transition-colors inline-flex items-center gap-1.5 whitespace-nowrap"
+              className="px-3.5 py-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-xs transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 animate-pulse"
             >
-              <Shield className="w-3.5 h-3.5 text-neutral-500" />
-              <span>Quizmeister Login</span>
+              <Trophy className="w-3.5 h-3.5" />
+              <span>Prüfung Starten</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => handleNavClick('countdown')}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-neutral-600 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors whitespace-nowrap shrink-0"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-600" />
+              <span>Gesperrt bis Start</span>
             </button>
           )}
 
+          {/* Quiz Master Portal Button */}
           <button
             onClick={() => {
               playClickSound();
-              onScrollToRegister();
+              onOpenQuizMaster();
             }}
-            className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-neutral-900 hover:bg-neutral-800 rounded-lg transition-colors inline-flex items-center gap-1.5 shadow-xs whitespace-nowrap"
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+              isQuizMasterLoggedIn
+                ? 'bg-neutral-900 text-white hover:bg-neutral-800'
+                : 'bg-white border border-neutral-300 text-neutral-800 hover:border-neutral-400 hover:bg-neutral-50'
+            }`}
           >
-            <span>Jetzt Anmelden</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-red-500" />
-          </button>
-        </div>
-
-        {/* Mobile Hamburger */}
-        <div className="flex sm:hidden items-center gap-2">
-          {currentUser && (
-            <button
-              onClick={onOpenDashboard}
-              className="p-2 text-white bg-neutral-900 rounded-lg text-xs"
-            >
-              <Shield className="w-4 h-4" />
-            </button>
-          )}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-neutral-700 hover:text-neutral-900 rounded-lg border border-neutral-200"
-            aria-label="Navigation öffnen"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <Shield className={`w-3.5 h-3.5 ${isQuizMasterLoggedIn ? 'text-amber-400' : 'text-neutral-500'}`} />
+            <span>{isQuizMasterLoggedIn ? 'Quizmeister-Deck' : 'Quizmeister'}</span>
           </button>
         </div>
       </div>
-
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-neutral-200 px-5 py-4 space-y-3 animate-fade-in">
-          <nav className="flex flex-col space-y-2.5">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-xs font-bold uppercase tracking-wider text-neutral-700 hover:text-red-600 py-1.5"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-          <div className="pt-3 border-t border-neutral-100 flex flex-col gap-2">
-            {currentUser ? (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenDashboard();
-                }}
-                className="w-full py-2.5 text-xs font-bold text-center bg-neutral-900 text-white rounded-lg"
-              >
-                Zum Quizmeister Dashboard ({currentUser.role === 'HEAD_MASTER' ? 'Leitstelle' : 'Sub-Portal'})
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenAuth();
-                }}
-                className="w-full py-2.5 text-xs font-bold text-center border border-neutral-300 rounded-lg text-neutral-800"
-              >
-                Quizmeister Login
-              </button>
-            )}
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onScrollToRegister();
-              }}
-              className="w-full py-2.5 text-xs font-bold text-center bg-red-600 text-white rounded-lg"
-            >
-              Kandidat Anmelden
-            </button>
-          </div>
-        </div>
-      )}
     </header>
   );
 };

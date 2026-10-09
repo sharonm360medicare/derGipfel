@@ -4,93 +4,74 @@
  */
 
 import React, { useState } from 'react';
-import { CompetitionProvider, useCompetition } from './context/CompetitionContext';
+import { CompetitionProvider } from './context/CompetitionContext';
 import { Navbar } from './components/Navbar';
-import { HeroSection } from './components/HeroSection';
-import { AboutSection } from './components/AboutSection';
-import { RoundsSection } from './components/RoundsSection';
-import { GroupsAnnouncementSection } from './components/GroupsAnnouncementSection';
-import { LeaderboardSection } from './components/LeaderboardSection';
-import { RegistrationSection } from './components/RegistrationSection';
-import { ScheduleSection } from './components/ScheduleSection';
+import { HeroCountdownSection } from './components/HeroCountdownSection';
+import { PracticeArenaSection } from './components/PracticeArenaSection';
 import { RulesSection } from './components/RulesSection';
+import { LeaderboardSection } from './components/LeaderboardSection';
 import { Footer } from './components/Footer';
-import { CelebrationModal } from './components/CelebrationModal';
-import { MasterAuthModal } from './components/MasterAuthModal';
-import { HeadMasterDashboard } from './components/HeadMasterDashboard';
-import { SubMasterDashboard } from './components/SubMasterDashboard';
+import { OfficialExamModal } from './components/OfficialExamModal';
+import { QuizMasterControlCenter } from './components/QuizMasterControlCenter';
 
-const MainCompetitionApp: React.FC = () => {
-  const { currentUser } = useCompetition();
+const CompetitionEntryPlatform: React.FC = () => {
+  const [isExamModalOpen, setIsExamModalOpen] = useState(false);
+  const [isQuizMasterOpen, setIsQuizMasterOpen] = useState(false);
 
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [activeView, setActiveView] = useState<'public' | 'dashboard'>('public');
-
-  const scrollToRegister = () => {
-    const el = document.getElementById('anmeldung');
+  const handleOpenPractice = () => {
+    const el = document.getElementById('practice-arena');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
-  const handleAuthSuccess = () => {
-    setActiveView('dashboard');
+  const handleViewLeaderboard = () => {
+    const el = document.getElementById('leaderboard');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  // If in Dashboard view and authenticated
-  if (activeView === 'dashboard' && currentUser) {
-    if (currentUser.role === 'HEAD_MASTER') {
-      return (
-        <>
-          <HeadMasterDashboard onExit={() => setActiveView('public')} />
-          <CelebrationModal />
-        </>
-      );
-    }
-
-    if (currentUser.role === 'SUB_MASTER') {
-      return (
-        <>
-          <SubMasterDashboard onExit={() => setActiveView('public')} />
-          <CelebrationModal />
-        </>
-      );
-    }
-  }
-
-  // Public Landing & Competition Portal
   return (
     <div className="min-h-screen bg-[#FBFBFA] text-[#121214] flex flex-col font-sans selection:bg-red-600 selection:text-white">
-      {/* Top Navigation */}
+      {/* Top 3-Zone Navigation */}
       <Navbar
-        onOpenAuth={() => setIsAuthModalOpen(true)}
-        onOpenDashboard={() => setActiveView('dashboard')}
-        onScrollToRegister={scrollToRegister}
+        onOpenQuizMaster={() => setIsQuizMasterOpen(true)}
+        onOpenExam={() => setIsExamModalOpen(true)}
       />
 
-      {/* Main Content Area */}
+      {/* Main Experience */}
       <main className="flex-1">
-        <HeroSection onRegisterClick={scrollToRegister} />
-        <AboutSection />
-        <RoundsSection />
-        <GroupsAnnouncementSection />
-        <LeaderboardSection />
-        <RegistrationSection />
-        <ScheduleSection />
+        {/* Hero with Mountain Backdrop, Live Countdown, and Release Indicator */}
+        <HeroCountdownSection
+          onOpenExam={() => setIsExamModalOpen(true)}
+          onOpenPractice={handleOpenPractice}
+        />
+
+        {/* Public Practice Arena with German Trivia Bank & Instant Explanations */}
+        <PracticeArenaSection />
+
+        {/* Official Competition Rules (Updated dynamically by Quiz Master) */}
         <RulesSection />
+
+        {/* Official Qualification Leaderboard */}
+        <LeaderboardSection />
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer onOpenQuizMaster={() => setIsQuizMasterOpen(true)} />
 
-      {/* Celebration Modal (Appears when Quiz Master ratifies marks or user triggers celebration) */}
-      <CelebrationModal />
+      {/* Official Timed Examination Modal */}
+      <OfficialExamModal
+        isOpen={isExamModalOpen}
+        onClose={() => setIsExamModalOpen(false)}
+        onViewLeaderboard={handleViewLeaderboard}
+      />
 
-      {/* Quiz Master Key Access Modal */}
-      <MasterAuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onSuccess={handleAuthSuccess}
+      {/* Quiz Master Control Center (Password Protected Admin Space) */}
+      <QuizMasterControlCenter
+        isOpen={isQuizMasterOpen}
+        onClose={() => setIsQuizMasterOpen(false)}
       />
     </div>
   );
@@ -99,7 +80,7 @@ const MainCompetitionApp: React.FC = () => {
 export default function App() {
   return (
     <CompetitionProvider>
-      <MainCompetitionApp />
+      <CompetitionEntryPlatform />
     </CompetitionProvider>
   );
 }
