@@ -426,80 +426,59 @@ function calculateRanks(teams: Team[]): Team[] {
   }));
 }
 
-function safeGetJSON<T>(key: string, fallback: T): T {
-  try {
-    if (typeof window === 'undefined' || !window.localStorage) return fallback;
-    const item = window.localStorage.getItem(key);
-    if (!item) return fallback;
-    return JSON.parse(item) as T;
-  } catch (err) {
-    console.warn(`SafeStorage: could not read ${key}`, err);
-    return fallback;
-  }
-}
-
-function safeSetJSON(key: string, value: unknown): void {
-  try {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    }
-  } catch (err) {
-    console.warn(`SafeStorage: could not write ${key}`, err);
-  }
-}
-
 export const CompetitionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [candidates, setCandidates] = useState<Candidate[]>(() => {
-    return safeGetJSON('gipfel_candidates', SEED_CANDIDATES);
+    const saved = localStorage.getItem('gipfel_candidates');
+    return saved ? JSON.parse(saved) : SEED_CANDIDATES;
   });
 
   const [teams, setTeams] = useState<Team[]>(() => {
-    return safeGetJSON('gipfel_teams', calculateRanks(SEED_TEAMS));
+    const saved = localStorage.getItem('gipfel_teams');
+    return saved ? JSON.parse(saved) : calculateRanks(SEED_TEAMS);
   });
 
   const [rounds, setRounds] = useState<RoundMetadata[]>(() => {
-    return safeGetJSON('gipfel_rounds', DEFAULT_ROUNDS);
+    const saved = localStorage.getItem('gipfel_rounds');
+    return saved ? JSON.parse(saved) : DEFAULT_ROUNDS;
   });
 
   const [activeRoundId, setActiveRoundId] = useState<RoundId>(2);
   const [subMasters, setSubMasters] = useState<QuizMasterUser[]>(() => {
-    return safeGetJSON('gipfel_sub_masters', SEED_SUB_MASTERS);
+    const saved = localStorage.getItem('gipfel_sub_masters');
+    return saved ? JSON.parse(saved) : SEED_SUB_MASTERS;
   });
 
   const [currentUser, setCurrentUser] = useState<QuizMasterUser | null>(() => {
-    return safeGetJSON('gipfel_current_user', null);
+    const saved = localStorage.getItem('gipfel_current_user');
+    return saved ? JSON.parse(saved) : null;
   });
 
   const [celebrationData, setCelebrationData] = useState<CelebrationData | null>(null);
   const [isCelebrationOpen, setIsCelebrationOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // Sync to localStorage safely
+  // Sync to localStorage
   useEffect(() => {
-    safeSetJSON('gipfel_candidates', candidates);
+    localStorage.setItem('gipfel_candidates', JSON.stringify(candidates));
   }, [candidates]);
 
   useEffect(() => {
-    safeSetJSON('gipfel_teams', teams);
+    localStorage.setItem('gipfel_teams', JSON.stringify(teams));
   }, [teams]);
 
   useEffect(() => {
-    safeSetJSON('gipfel_rounds', rounds);
+    localStorage.setItem('gipfel_rounds', JSON.stringify(rounds));
   }, [rounds]);
 
   useEffect(() => {
-    safeSetJSON('gipfel_sub_masters', subMasters);
+    localStorage.setItem('gipfel_sub_masters', JSON.stringify(subMasters));
   }, [subMasters]);
 
   useEffect(() => {
     if (currentUser) {
-      safeSetJSON('gipfel_current_user', currentUser);
+      localStorage.setItem('gipfel_current_user', JSON.stringify(currentUser));
     } else {
-      try {
-        localStorage.removeItem('gipfel_current_user');
-      } catch {
-        // ignore
-      }
+      localStorage.removeItem('gipfel_current_user');
     }
   }, [currentUser]);
 
