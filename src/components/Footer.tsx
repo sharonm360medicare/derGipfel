@@ -1,77 +1,73 @@
 import React from 'react';
-import { Shield } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import { playClickSound } from '../utils/sound';
 
-interface FooterProps {
-  onOpenQuizMaster: () => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onOpenQuizMaster }) => {
-  const handleNavClick = (id: string) => {
+export const Footer: React.FC = () => {
+  const scrollToTop = () => {
     playClickSound();
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <footer className="bg-neutral-950 text-neutral-400 py-12 border-t border-neutral-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-neutral-800">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded bg-red-600 text-white flex items-center justify-center font-bold text-xs">
-                ▲
-              </span>
-              <span className="font-display font-black text-lg text-white tracking-tight">
-                DER GIPFEL 2026
-              </span>
-            </div>
-            <p className="text-xs text-neutral-400 max-w-md leading-relaxed">
-              Offizielle Qualifikations- und Eintrittsplattform für den nationalen Deutsch-Wettbewerb. Stufe 01: Individuelle Landeskunde-Prüfung.
-            </p>
-          </div>
+    <footer className="border-t border-neutral-200 bg-white py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center space-y-8">
+        {/* Mountain Peak Icon */}
+        <button
+          onClick={scrollToTop}
+          className="group focus:outline-none p-2 rounded-full hover:bg-neutral-100 transition-colors"
+          title="Nach oben scrollen"
+        >
+          <svg
+            className="w-8 h-8 text-neutral-900 group-hover:text-red-600 transition-colors mx-auto"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m2 20 7-13 4 7 3-5 6 11H2z" />
+          </svg>
+        </button>
 
-          <div className="flex flex-wrap items-center gap-6 text-xs font-medium text-neutral-300">
-            <button
-              onClick={() => handleNavClick('countdown')}
-              className="hover:text-white transition-colors"
-            >
-              Zeitplan & Countdown
-            </button>
-            <button
-              onClick={() => handleNavClick('practice-arena')}
-              className="hover:text-white transition-colors"
-            >
-              Übungsarena
-            </button>
-            <button
-              onClick={() => handleNavClick('rules')}
-              className="hover:text-white transition-colors"
-            >
-              Wettbewerbsregeln
-            </button>
-            <button
-              onClick={() => handleNavClick('leaderboard')}
-              className="hover:text-white transition-colors"
-            >
-              Bestenliste
-            </button>
-            <button
-              onClick={() => {
-                playClickSound();
-                onOpenQuizMaster();
-              }}
-              className="text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              <span>Spielleitung</span>
-            </button>
-          </div>
+        {/* Brand Display Header */}
+        <div className="space-y-2">
+          <h2 className="text-3xl sm:text-5xl font-display font-black tracking-tight uppercase text-neutral-900">
+            DER GIPFEL
+          </h2>
+          <p className="text-xs sm:text-sm font-semibold tracking-wider text-neutral-500 uppercase">
+            The Journey to German Excellence.
+          </p>
         </div>
 
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-2xs text-neutral-400">
-          <p>© 2026 DER GIPFEL · Nationaler Deutsch-Wettbewerb. Alle Rechte vorbehalten.</p>
-          <p>Entwickelt für faire, zeitgesteuerte Qualifikationsrunden bundesweit.</p>
+        {/* Navigation Link Mirror matching Brochure Page 17 */}
+        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-2xs sm:text-xs font-mono font-bold tracking-widest text-neutral-600 uppercase">
+          <a href="#" className="hover:text-neutral-900 transition-colors">HOME</a>
+          <span aria-hidden="true" className="text-neutral-300">·</span>
+          <a href="#wettbewerb" className="hover:text-neutral-900 transition-colors">COMPETITION</a>
+          <span aria-hidden="true" className="text-neutral-300">·</span>
+          <a href="#runden" className="hover:text-neutral-900 transition-colors">ROUNDS</a>
+          <span aria-hidden="true" className="text-neutral-300">·</span>
+          <a href="#gruppen" className="hover:text-neutral-900 transition-colors">PARTICIPANTS</a>
+          <span aria-hidden="true" className="text-neutral-300">·</span>
+          <a href="#zeitplan" className="hover:text-neutral-900 transition-colors">SCHEDULE</a>
+          <span aria-hidden="true" className="text-neutral-300">·</span>
+          <a href="#regeln" className="hover:text-neutral-900 transition-colors">RULES</a>
+        </nav>
+
+        {/* Official German Trademark Slogan */}
+        <div className="pt-8 border-t border-neutral-100 w-full flex flex-col sm:flex-row items-center justify-between text-2xs text-neutral-500 font-mono gap-4">
+          <span>© DER GIPFEL {new Date().getFullYear()}</span>
+          <span className="uppercase tracking-widest text-neutral-700 font-semibold">
+            EINE SPRACHE · EINE HERAUSFORDERUNG · EIN GIPFEL
+          </span>
+          <button
+            onClick={scrollToTop}
+            className="hover:text-neutral-900 inline-flex items-center gap-1 font-semibold"
+          >
+            <span>NACH OBEN</span>
+            <ArrowUp className="w-3 h-3" />
+          </button>
         </div>
       </div>
     </footer>

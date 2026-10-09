@@ -9,9 +9,7 @@ let isMuted = false;
 function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
   if (!audioCtx) {
-    const AudioContextClass =
-      window.AudioContext ||
-      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (AudioContextClass) {
       audioCtx = new AudioContextClass();
     }
@@ -31,7 +29,7 @@ export function getSoundMuted(): boolean {
 }
 
 /**
- * Play a victorious, multi-harmonic celebration fanfare
+ * Play a victorious, multi-harmonic celebration fanfare when marks are published!
  */
 export function playCelebrationFanfare() {
   if (isMuted) return;
@@ -67,68 +65,9 @@ export function playCelebrationFanfare() {
 }
 
 /**
- * Play a joyful uplifting chime for correct quiz answers
+ * Play a subtle crisp chime for score increments
  */
-export function playCorrectSound() {
-  if (isMuted) return;
-  const ctx = getAudioContext();
-  if (!ctx) return;
-
-  const now = ctx.currentTime;
-  const notes = [
-    { freq: 523.25, time: 0.0, dur: 0.12 }, // C5
-    { freq: 659.25, time: 0.09, dur: 0.14 }, // E5
-    { freq: 783.99, time: 0.18, dur: 0.28 }, // G5
-  ];
-
-  notes.forEach((n) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(n.freq, now + n.time);
-
-    gain.gain.setValueAtTime(0.15, now + n.time);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + n.time + n.dur);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start(now + n.time);
-    osc.stop(now + n.time + n.dur + 0.02);
-  });
-}
-
-/**
- * Play a soft, gentle error buzz for incorrect answers
- */
-export function playIncorrectSound() {
-  if (isMuted) return;
-  const ctx = getAudioContext();
-  if (!ctx) return;
-
-  const now = ctx.currentTime;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(220, now); // A3
-  osc.frequency.exponentialRampToValueAtTime(164.81, now + 0.25); // E3
-
-  gain.gain.setValueAtTime(0.14, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.32);
-}
-
-/**
- * Play a crisp herald chime for exam start
- */
-export function playExamStartSound() {
+export function playScoreChime() {
   if (isMuted) return;
   const ctx = getAudioContext();
   if (!ctx) return;
@@ -138,41 +77,17 @@ export function playExamStartSound() {
   const gain = ctx.createGain();
 
   osc.type = 'sine';
-  osc.frequency.setValueAtTime(440, now);
-  osc.frequency.exponentialRampToValueAtTime(880, now + 0.18);
+  osc.frequency.setValueAtTime(880, now);
+  osc.frequency.exponentialRampToValueAtTime(1174.66, now + 0.12); // A5 -> D6
 
-  gain.gain.setValueAtTime(0.2, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-
-  osc.start(now);
-  osc.stop(now + 0.42);
-}
-
-/**
- * Soft tick sound for the final 10 seconds of exam
- */
-export function playTimerTick() {
-  if (isMuted) return;
-  const ctx = getAudioContext();
-  if (!ctx) return;
-
-  const now = ctx.currentTime;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(987.77, now); // B5
-  gain.gain.setValueAtTime(0.04, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+  gain.gain.setValueAtTime(0.18, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
 
   osc.connect(gain);
   gain.connect(ctx.destination);
 
   osc.start(now);
-  osc.stop(now + 0.05);
+  osc.stop(now + 0.26);
 }
 
 /**
@@ -189,12 +104,12 @@ export function playClickSound() {
 
   osc.type = 'sine';
   osc.frequency.setValueAtTime(600, now);
-  gain.gain.setValueAtTime(0.04, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+  gain.gain.setValueAtTime(0.05, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
   osc.connect(gain);
   gain.connect(ctx.destination);
 
   osc.start(now);
-  osc.stop(now + 0.05);
+  osc.stop(now + 0.06);
 }
