@@ -1,0 +1,6 @@
+{
+  "name": "DER GIPFEL - German Language Quiz Competition",
+  "description": "Official competition platform for DER GIPFEL with candidate registration, live leaderboards, project entries, real-time score tracking, and secure Quiz Master command center.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
