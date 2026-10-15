@@ -45,10 +45,6 @@ export const Footer: React.FC = () => {
 
         {/* Navigation Link Mirror matching Brochure Page 17 */}
         <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-2xs sm:text-xs font-mono font-bold tracking-widest text-neutral-600 uppercase">
-          <a href="#" className="hover:text-neutral-900 transition-colors">
-            {language === 'de' ? 'START' : 'HOME'}
-          </a>
-          <span aria-hidden="true" className="text-neutral-300">·</span>
           <a href="#wettbewerb" className="hover:text-neutral-900 transition-colors">
             {t.nav.competition}
           </a>
